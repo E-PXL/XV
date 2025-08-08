@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-<title>Inside the House</title>
+<title>Welcome home</title>
 <style>
   html, body {
     margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden;
@@ -59,7 +59,7 @@
     background-color: rgba(255, 0, 0, 0); /* invisible but clickable */
     cursor: pointer;
     z-index: 20;
-    border: 2px solid rgba(255, 0, 0, 0.7); /* visible for testing, remove or set transparent later */
+    border: 2px solid rgba(255, 0, 0, 0); /* visible for testing, remove or set transparent later */
     box-sizing: border-box;
   }
 
@@ -73,6 +73,11 @@
     top: 300px;    /* adjust to your exact position */
     left: 675px;   /* adjust to your exact position */
   }
+  .hitbox.left.hall {
+      top: 300px;
+      left: 80px;
+      width: 175px;
+  }
 </style>
 </head>
 <body>
@@ -84,6 +89,7 @@
   <!-- Clickable doors -->
   <div class="hitbox left-door" id="leftDoor"></div>
   <div class="hitbox right-door" id="rightDoor"></div>
+  <div class="hitbox left hall" id="leftHall"></div>
 
   <!-- Film grain overlay -->
   <div class="grain"></div>
@@ -96,6 +102,9 @@
 
   document.getElementById('rightDoor').addEventListener('click', () => {
     window.location.href = 'room3.html';
+  });
+  document.getElementById('leftHall').addEventListener('click', () => {
+window.location.href = 'room4.html';
   });
 </script>
 

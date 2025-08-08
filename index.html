@@ -85,59 +85,32 @@
 <audio id="doorSound" src="door-open.mp3" preload="auto"></audio>
 
 <script>
-const container = document.getElementById('container');
-const doorSoundLeft = document.getElementById('doorSoundLeft');
-const doorSoundRight = document.getElementById('doorSoundRight');
+    const hitbox = document.getElementById('door');
+    const doorSound = document.getElementById('doorSound');
 
-function handleDoorClick(sound, targetUrl) {
-  // Set up transition for fade
-  container.style.transition = "opacity 1s ease";
-
-  // Start audio playback immediately
-  sound.volume = 0.8;
-  const playPromise = sound.play();
-
-  // Start fade on next animation frame to trigger CSS transition
-  requestAnimationFrame(() => {
-    container.style.opacity = 0;
-  });
-
-  // If play() returns a promise, catch if blocked (autoplay policies)
-  if (playPromise !== undefined) {
-    playPromise.catch(() => {
-      // If audio blocked, redirect after fade duration (1s)
-      setTimeout(() => window.location.href = targetUrl, 1000);
+    hitbox.addEventListener('click', () => {
+    doorSound.volume = 0.8;
+    doorSound.play().catch(() => {
+        console.log("Audio playback prevented by browser.");
+        // Fallback: if audio can't play, proceed immediately
+        goToNextPage();
     });
-  }
 
-  // Redirect after audio finishes
-  sound.onended = () => {
-    window.location.href = targetUrl;
-  };
+    document.querySelector('.bg').classList.add('fade-out');
+    hitbox.classList.add('fade-out');
+    document.querySelector('.grain').classList.add('fade-out');
+
+    // When audio ends, go to next page
+    doorSound.onended = () => {
+        goToNextPage();
+    };
+});
+
+function goToNextPage() {
+    window.location.href = "inside.html";
 }
 
-// Event listeners for doors
-document.getElementById('leftDoor').addEventListener('click', () => {
-  handleDoorClick(doorSoundLeft, 'room2.html');
-});
-document.getElementById('rightDoor').addEventListener('click', () => {
-  handleDoorClick(doorSoundRight, 'room3.html');
-});
-
-// For hall (no sound): fade + redirect
-document.getElementById('leftHall').addEventListener('click', () => {
-  container.style.transition = "opacity 1s ease";
-  requestAnimationFrame(() => {
-    container.style.opacity = 0;
-  });
-  setTimeout(() => {
-    window.location.href = 'room4.html';
-  }, 1000);
-});
-
-  </script>
-  
-  
+</script>
 
 </body>
 </html>

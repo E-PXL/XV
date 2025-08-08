@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Inside the House - Laptop Interaction</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden;
+    font-family: monospace, monospace;
+  }
+
+  /* Fullscreen container */
+  #container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    overflow: hidden;
+    transition: opacity 1s ease;
+    opacity: 1;
+  }
+
+  /* Animated 2-frame background */
+  .room-bg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("console1.png");
+    background-size: cover;
+    background-position: center;
+    animation: bgAnimation 1s steps(1) infinite alternate;
+    z-index: 0;
+    user-select: none;
+  }
+  @keyframes bgAnimation {
+    0% {
+      background-image: url("console1.png");
+    }
+    50% {
+      background-image: url("console2.png");
+    }
+    100% {
+      background-image: url("console1.png");
+    }
+  }
+
+  /* Film grain overlay */
+  .grain {
+    pointer-events: none;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("grain.png");
+    background-repeat: repeat;
+    opacity: 0.15;
+    z-index: 10;
+    animation: grainMove 1s steps(10) infinite;
+  }
+  @keyframes grainMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 100px 100px; }
+  }
+
+  /* Hitboxes */
+  .hitbox {
+    position: absolute;
+    background-color: rgba(255, 0, 0, 0); /* invisible but clickable */
+    cursor: pointer;
+    z-index: 20;
+    border: 2px solid rgba(255, 0, 0, 0); /* visible for testing */
+    box-sizing: border-box;
+  }
+
+  /* Adjust these percentages to match door positions relative to full screen */
+  .hitbox.left.hall {
+    top: 0%;   /* roughly 300px / 720px */
+    left: 43.25%;  /* roughly 80px / 1280px */
+    width: 10.67%; /* 175px / 1280px */
+    height: 27.77%; /* 200px / 720px */
+  }
+
+  .hitbox.laptop {
+    top: 22.5%;   /* 450px / 720px */
+    left: 27.31%; /* 900px / 1280px */
+    width: 17.63%; /* 200px / 1280px */
+    height: 30.83%; /* 150px / 720px */
+    border-color: rgba(0, 255, 0, 0);
+  }
+
+  /* Laptop popup */
+  #laptopPopup {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #111;
+    border: 2px solid #333;
+    padding: 20px;
+    display: none;
+    z-index: 1000;
+    width: 400px;
+    color: lime;
+  }
+
+  #laptopPopup textarea {
+    width: 100%;
+    height: 150px;
+    font-size: 18px;
+    background: black;
+    color: lime;
+    border: none;
+    resize: none;
+    font-family: monospace, monospace;
+  }
+
+  #closeLaptop {
+    margin-top: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+    background: #222;
+    color: lime;
+    border: none;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+  <!-- Animated background -->
+  <div class="room-bg"></div>
+
+  <!-- Only one hall clickable area -->
+  <div class="hitbox left hall" id="leftHall"></div>
+
+  <!-- Laptop clickable zone -->
+  <div class="hitbox laptop" id="laptopZone"></div>
+
+  <!-- Film grain overlay -->
+  <div class="grain"></div>
+
+  <!-- Hall door sound -->
+  <audio id="hallSound" src="hall-door-open.mp3" preload="auto"></audio>
+</div>
+
+<!-- Laptop popup -->
+<div id="laptopPopup">
+  <textarea id="laptopInput" placeholder="Type here..."></textarea>
+  <button id="closeLaptop">Close Laptop</button>
+</div>
+
+<script>
+    const container = document.getElementById('container');
+    const hallSound = document.getElementById('hallSound');
+  
+    // Regresar al hall cuando se haga click en la zona del hall
+    document.getElementById('leftHall').addEventListener('click', () => {
+      container.style.transition = "opacity 1s ease";
+      requestAnimationFrame(() => {
+        container.style.opacity = 0;
+      });
+  
+      hallSound.volume = 0.8;
+      const playPromise = hallSound.play();
+  
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          setTimeout(() => window.location.href = 'inside.html', 1000);
+        });
+      }
+  
+      hallSound.onended = () => {
+        window.location.href = 'inside.html';
+      };
+    });
+  
+    // Laptop interaction
+    const laptopZone = document.getElementById('laptopZone');
+    const laptopPopup = document.getElementById('laptopPopup');
+    const laptopInput = document.getElementById('laptopInput');
+    const closeLaptop = document.getElementById('closeLaptop');
+  
+    laptopZone.addEventListener('click', () => {
+      laptopPopup.style.display = 'block';
+      laptopInput.focus();
+    });
+  
+    closeLaptop.addEventListener('click', () => {
+      laptopPopup.style.display = 'none';
+      laptopInput.value = '';
+    });
+  
+    laptopInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault(); // avoid new line in textarea
+        const command = laptopInput.value.trim();
+  
+        if (command === 'SN1LN0RL1') {
+          alert('CML_LOML');
+          laptopInput.value = '';
+        } else if (command === '/hello') {
+          alert('Hello, Daphne! ❤');
+          laptopInput.value = '';
+        } else if (command === 'SN1LPRP28') {
+          alert('💜💙🧡');
+          laptopInput.value = '';
+        } else {
+          laptopInput.value = ''; // clear unknown commands
+        }
+      }
+    });
+  </script>
+  
+
+</body>
+</html>

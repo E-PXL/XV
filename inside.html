@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-<title>Welcome home</title>
+<title>Inside the House</title>
 <style>
   html, body {
     margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden;
@@ -20,6 +20,8 @@
     transform: translateY(-50%);
     background: black;
     overflow: hidden;
+    transition: opacity 1s ease;
+    opacity: 1;
   }
 
   /* Background room image inside container */
@@ -93,19 +95,80 @@
 
   <!-- Film grain overlay -->
   <div class="grain"></div>
+
+  <!-- Door open sounds -->
+  <audio id="doorSoundLeft" src="door-open.mp3" preload="auto"></audio>
+  <audio id="doorSoundRight" src="door-open.mp3" preload="auto"></audio>
+  <!-- Hall door sound -->
+  <audio id="hallSound" src="hall-door-open.mp3" preload="auto"></audio>
 </div>
 
 <script>
+  const container = document.getElementById('container');
+  const doorSoundLeft = document.getElementById('doorSoundLeft');
+  const doorSoundRight = document.getElementById('doorSoundRight');
+  const hallSound = document.getElementById('hallSound');
+
+  function handleDoorClick(sound, targetUrl) {
+    container.style.transition = "opacity 1s ease";
+
+    // Trigger fade on next frame
+    requestAnimationFrame(() => {
+      container.style.opacity = 0;
+    });
+
+    sound.volume = 0.8;
+    const playPromise = sound.play();
+
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        setTimeout(() => window.location.href = targetUrl, 1000);
+      });
+    }
+
+    sound.onended = () => {
+      window.location.href = targetUrl;
+    };
+  }
+
+  // Door clicks
   document.getElementById('leftDoor').addEventListener('click', () => {
-    window.location.href = 'room2.html';
+    handleDoorClick(doorSoundLeft, 'room2.html');
   });
 
   document.getElementById('rightDoor').addEventListener('click', () => {
-    window.location.href = 'room3.html';
+    handleDoorClick(doorSoundRight, 'room3.html');
   });
+
+  // Hall click with sound
   document.getElementById('leftHall').addEventListener('click', () => {
-window.location.href = 'room4.html';
+  container.style.transition = "opacity 1s ease";
+  requestAnimationFrame(() => {
+    container.style.opacity = 0;
   });
+
+  let playCount = 0;
+  hallSound.volume = 0.8;
+
+  function playAgain() {
+    playCount++;
+    hallSound.play().catch(() => {
+      // fallback redirect if blocked
+      setTimeout(() => window.location.href = 'room4.html', 1000);
+    });
+  }
+
+  hallSound.onended = () => {
+    if (playCount < 2) {
+      playAgain();
+    } else {
+      window.location.href = 'room4.html';
+    }
+  };
+
+  playAgain();
+});
+
 </script>
 
 </body>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+<title>Inside the House</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden;
+  }
+
+  /* Fixed-size container to lock layout */
+  #container {
+    position: relative;
+    width: 1280px;   /* Set your design width */
+    height: 720px;   /* Set your design height */
+    margin: auto;    /* Center horizontally */
+    top: 50%;
+    transform: translateY(-50%);
+    background: black;
+    overflow: hidden;
+  }
+
+  /* Background room image inside container */
+  .room-bg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1280px;
+    height: 720px;
+    object-fit: cover;
+    z-index: 0;
+    user-select: none;
+  }
+
+  /* Film grain overlay */
+  .grain {
+    pointer-events: none;
+    position: absolute;
+    top: 0; left: 0;
+    width: 1280px;
+    height: 720px;
+    background-image: url("grain.png");
+    background-repeat: repeat;
+    opacity: 0.15;
+    z-index: 10;
+    animation: grainMove 1s steps(10) infinite;
+  }
+  @keyframes grainMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 100px 100px; }
+  }
+
+  /* Hitboxes inside container with fixed pixel positions */
+  .hitbox {
+    position: absolute;
+    width: 100px;
+    height: 200px;
+    background-color: rgba(255, 0, 0, 0); /* invisible but clickable */
+    cursor: pointer;
+    z-index: 20;
+    border: 2px solid rgba(255, 0, 0, 0.7); /* visible for testing, remove or set transparent later */
+    box-sizing: border-box;
+  }
+
+  /* Use pixel coordinates inside the fixed container */
+  .hitbox.left-door {
+    top: 300px;    /* adjust to your exact position */
+    left: 460px;   /* adjust to your exact position */
+  }
+
+  .hitbox.right-door {
+    top: 300px;    /* adjust to your exact position */
+    left: 675px;   /* adjust to your exact position */
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+  <!-- Background room image -->
+  <img src="room1.png" alt="Room 1" class="room-bg" />
+
+  <!-- Clickable doors -->
+  <div class="hitbox left-door" id="leftDoor"></div>
+  <div class="hitbox right-door" id="rightDoor"></div>
+
+  <!-- Film grain overlay -->
+  <div class="grain"></div>
+</div>
+
+<script>
+  document.getElementById('leftDoor').addEventListener('click', () => {
+    window.location.href = 'room2.html';
+  });
+
+  document.getElementById('rightDoor').addEventListener('click', () => {
+    window.location.href = 'room3.html';
+  });
+</script>
+
+</body>
+</html>

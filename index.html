@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Door</title>
+<style>
+    body {
+        background-color: #000000;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    /* Full-screen background image */
+    .bg {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 0;
+        animation: flicker 3s infinite;
+    }
+
+    @keyframes flicker {
+        0%, 19.999%, 22%, 62.999%, 64%, 100% { opacity: 1; }
+        20%, 21.999%, 63%, 63.999% { opacity: 0.85; }
+    }
+
+    /* Invisible clickable area */
+    .hitbox {
+        position: fixed;
+        top: 50%;    /* Center vertically */
+        left: 50%;   /* Center horizontally */
+        width: 150px; /* Adjust width to match your door size */
+        height: 300px; /* Adjust height to match your door size */
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 0, 0, 0); /* Invisible but clickable */
+        cursor: pointer;
+        z-index: 1;
+    }
+
+    /* Film grain overlay */
+    .grain {
+        pointer-events: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-image: url("grain.png");
+        background-repeat: repeat;
+        opacity: 0.15;
+        z-index: 2;
+        animation: grainMove 1s steps(10) infinite;
+    }
+
+    @keyframes grainMove {
+        0% { background-position: 0 0; }
+        100% { background-position: 100px 100px; }
+    }
+
+    .fade-out {
+        animation: fadeAway 1s forwards;
+    }
+
+    @keyframes fadeAway {
+        to { opacity: 0; }
+    }
+</style>
+</head>
+<body>
+
+<!-- Background door image -->
+<img src="door.PNG" alt="Mysterious Door" class="bg" />
+
+<!-- Clickable hotspot -->
+<div class="hitbox" id="door"></div>
+
+<!-- Film grain overlay -->
+<div class="grain"></div>
+
+<!-- Door opening sound -->
+<audio id="doorSound" src="door-open.mp3" preload="auto"></audio>
+
+<script>
+    const hitbox = document.getElementById('door');
+    const doorSound = document.getElementById('doorSound');
+
+    hitbox.addEventListener('click', () => {
+    doorSound.volume = 0.8;
+    doorSound.play().catch(() => {
+        console.log("Audio playback prevented by browser.");
+        // Fallback: if audio can't play, proceed immediately
+        goToNextPage();
+    });
+
+    document.querySelector('.bg').classList.add('fade-out');
+    hitbox.classList.add('fade-out');
+    document.querySelector('.grain').classList.add('fade-out');
+
+    // When audio ends, go to next page
+    doorSound.onended = () => {
+        goToNextPage();
+    };
+});
+
+function goToNextPage() {
+    window.location.href = "inside.html";
+}
+
+</script>
+
+</body>
+</html>
